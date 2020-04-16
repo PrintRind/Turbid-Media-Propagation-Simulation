@@ -15,7 +15,7 @@ def scan_conjugate_correction(u, sample, conj_mask, z_conj, grating_spacing_in, 
     NA = 0.5
     N = sample.shape
     #make spherical input wavefront
-    E_0, phase, amp = input_wavefront(NA, N, u)
+    E0, phase, amp = input_wavefront(NA, N, u)
     #define x axis
     x=np.arange(-N[1]/2,N[1]/2)*u[1]
     #define grating
@@ -30,7 +30,7 @@ def scan_conjugate_correction(u, sample, conj_mask, z_conj, grating_spacing_in, 
     #loop to step beam across sample
     for q in range(num_steps):  
         #calculate electric field at conjugate plane
-        E = fun_propagate(u,E_0,np.roll(sample[0:z_conj,:],offset+q*m,axis=1))  
+        E = fun_propagate(u,E0,np.roll(sample[0:z_conj,:],offset+q*m,axis=1))  
         #apply AO mask at conjugate plane
         E1 = abs(E[-1,:])*np.roll(conj_mask,offset+q*m)/abs(np.roll(conj_mask,offset+q*m))  
         #finish propagating to sample
