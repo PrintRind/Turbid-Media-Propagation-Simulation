@@ -117,6 +117,7 @@ plt.title("field")
 x_s=np.arange(20)*u[1]
 axs[1].plot(x_s,(abs(E_gs[-1,0:20])))
 plt.title("field")
+plt.xlabel('x / lambda')
 
 #%% propagate the "guidestar" through the turbid sample
 
@@ -164,21 +165,21 @@ plt.title('slice of turbidity')
 #%% calculated conjugated corrections
 
 #calculate conjugated correction mask for turbid sample
-E_conj_corr = calculate_conjugated_mask(u, z_corr, sample, FOV_in, num_corrections)
+E_conj_corr = calculate_conjugated_mask(u, z_corr, sample, FOV_in, num_corrections,NA)
 #calculate conjugated correction mask for clear sample
-E_conj_corr_clear = calculate_conjugated_mask(u, z_corr, sample_clear, FOV_in, num_corrections)
+E_conj_corr_clear = calculate_conjugated_mask(u, z_corr, sample_clear, FOV_in, num_corrections,NA)
 #calculate conjugated correction mask for conj. sample with one line of inhomogeneity
-E_conj_corr_slice = calculate_conjugated_mask(u, z_corr, sample_slice, FOV_in, num_corrections)
+E_conj_corr_slice = calculate_conjugated_mask(u, z_corr, sample_slice, FOV_in, num_corrections,NA)
 
 #%% A) focusing through a clear sample
 
 image_clear=scan(u,E_in, sample_clear, grating_space, image_step_size, FOV_in)
 pupil_corr_clear=scan(u,abs(E_in)*E_corr/abs(E_corr), sample_clear, grating_space, image_step_size, FOV_in)
-conjugate_corr_clear= scan_conjugate_correction(u, sample_clear, E_conj_corr_clear, z_corr, grating_space, image_step_size, FOV_in)
+conjugate_corr_clear= scan_conjugate_correction(u, sample_clear, E_conj_corr_clear, z_corr, grating_space, image_step_size, FOV_in,NA)
 
 fig, ax = plt.subplots()
 ax.plot(image_clear, 'b', label = 'Raw')
-ax.plot(pupil_corr_clear, 'r', label = 'Pupil*20')
+ax.plot(pupil_corr_clear, 'r', label = 'Pupil')
 ax.plot(conjugate_corr_clear,'green', label = 'Conjugated')
 plt.title('Images through clear sample')
 plt.legend()
@@ -187,7 +188,7 @@ plt.legend()
 
 image_scatt=scan(u,E_in, sample, grating_space, image_step_size, FOV_in)
 pupil_corr_scatt=scan(u,abs(E_in)*E_corr/abs(E_corr), sample, grating_space, image_step_size, FOV_in)
-conjugate_corr_scatt = scan_conjugate_correction(u,sample,E_conj_corr,z_corr,grating_space,image_step_size,FOV_in)
+conjugate_corr_scatt = scan_conjugate_correction(u,sample,E_conj_corr,z_corr,grating_space,image_step_size,FOV_in,NA)
 
 fig, ax = plt.subplots()
 ax.plot(image_scatt, 'b', label = 'Raw')
@@ -199,8 +200,8 @@ plt.legend()
 
 #%% C) turbid slice - conjugated correction  
 
-E_conj_corr_slice = calculate_conjugated_mask(u, z_corr, sample_slice, FOV_in, num_corrections)
-conjugate_corr_slice = scan_conjugate_correction(u, sample_slice, E_conj_corr_slice, z_corr, grating_space, image_step_size, FOV_in)
+E_conj_corr_slice = calculate_conjugated_mask(u, z_corr, sample_slice, FOV_in, num_corrections,NA)
+conjugate_corr_slice = scan_conjugate_correction(u, sample_slice, E_conj_corr_slice, z_corr, grating_space, image_step_size, FOV_in,NA)
 image_slice=scan(u,E_in, sample_slice, grating_space, image_step_size, FOV_in)
 pupil_corr_slice=scan(u,abs(E_in)*E_corr/abs(E_corr), sample_slice, grating_space, image_step_size, FOV_in)
  
