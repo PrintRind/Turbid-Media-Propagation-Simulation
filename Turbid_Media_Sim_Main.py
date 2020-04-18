@@ -129,14 +129,27 @@ E_test=fun_propagate(u,abs(E_in)*E_corr/abs(E_corr),sample) #we can only correct
 E_test2=fun_propagate(u, E_in,sample)
 
 fig, axs = plt.subplots(2,1)
-axs[0].imshow(np.fft.fftshift(abs(E_test)**1,1))
+axs[0].imshow(np.fft.fftshift(abs(E_test)**1,1),cmap="jet")
 plt.title("intensity")
 axs[1].plot(np.fft.fftshift(x),np.abs(E_test[-1,:])**4)
 axs[1].plot(np.fft.fftshift(x),np.abs(E_test2[-1,:])**4)
 plt.title('corrected vs. uncorrected 2-photon signal')
 plt.xlabel('x')
 
-# In[14]:
+
+
+#%% designing turbid sample slide / determining conjugate correction plane
+
+d_turb=60 #no. of layers that are turbid
+z_turb=200 #central layer of turbid section 
+
+sample_slice = np.ones(sample.shape)*1.33
+sample_slice[z_turb-int(d_turb/2):z_turb+int(d_turb/2),:] = sample[z_turb-int(d_turb/2):z_turb+int(d_turb/2),:]
+
+plt.imshow(sample_slice,extent=[x[0],x[-1],z[-1],z[0]])
+plt.xlabel('x / lambda')
+plt.ylabel('z / lambda')
+plt.title('slice of turbidity')
 
 #set FOV in pixels
 FOV_in = 100
@@ -145,22 +158,11 @@ image_step_size = 1
 #set grating spacing in pixels
 grating_space = 20
 #conjugated correction plane (in grid units, i.e. out of 256)
-z_corr = 10
+z_corr = z_turb - 80
 #number of points for conjugated correction
 num_corrections = 1
 
-#%% designing turbid sample slide
-
-d_turb=20 #no. of layers that are turbid
-z_turb=z_corr #central layer of turbid section; set to "z_corr" to match correction & turbidity layers 
-
-sample_slice = np.ones(sample.shape)*1.33
-sample_slice[z_turb-int(d_turb/2):z_turb+int(d_turb/2),:] = sample[z_turb-int(d_turb/2):z_corr+int(d_turb/2),:]
-
-plt.imshow(sample_slice,extent=[x[0],x[-1],z[0],z[-1]])
-plt.xlabel('x / lambda')
-plt.ylabel('z / lambda')
-plt.title('slice of turbidity')
+plt.plot(x,np.ones(len(x))*z_corr*u[0],'r-')
 
 #%% calculated conjugated corrections
 
@@ -196,7 +198,6 @@ ax.plot(pupil_corr_scatt, 'r', label = 'Pupil')
 ax.plot(conjugate_corr_scatt,'green', label = 'conjugated')
 plt.title('Images through turbid sample')
 plt.legend()
-
 
 #%% C) turbid slice - conjugated correction  
 

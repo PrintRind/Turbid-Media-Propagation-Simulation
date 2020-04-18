@@ -28,14 +28,11 @@ def calculate_conjugated_mask(u, z_conj, sample, FOV, num_steps,NA):
     E_ref=E_gs[z_conj,:]/abs(E_gs[z_conj,:])
     
     for i in range(num_steps):
-        #first propagate guidestar at this sample position
+        #first propagate guidestar at this sample position through the entire sample
         rollval=offset+int(stepsize/2)+i*int(stepsize) #sample shift
         E1=fun_propagate(u,np.conj(E_gs[-1,:]),np.roll(np.flip(sample,0),rollval,axis=1))
-        #now propagate back through a clear sample to get the correction field for a single imaging point
+        #now propagate back through a clear sample to get the correction field at the SLM-conjugate plane
         E2 = fun_propagate(u, np.conj(E1[-1,:]), sample_clear[0:z_conj,:])
-        #plt.figure(1)
-        #plt.plot(np.angle(E2))
-        #time.sleep(3)
         E_conj_corr[i,:] = np.roll(E2[-1,:]/E_ref,-rollval) #the correction phase pattern is "fixed" with the sample, therefore we must also consider the sample-shift here
     
     E_corr = np.average(E_conj_corr, 0)
