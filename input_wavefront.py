@@ -12,10 +12,12 @@ def input_wavefront(NA, N, u):
     NA_geo=NA/1.33 #geometric NA of our objective lens
     # phase
     R=N[0]*u[0] #radius of curvature; define it such that focus lies at last layer
-    phase = 2*np.pi*(np.sqrt(0j+R**2-x**2)-R)  # spherical phase
+    #phase = 2*np.pi*(np.sqrt(0j+R**2-x**2)-R)  # spherical phase
+    phase = -2*np.pi*np.sqrt((N[0]*u[0])**2+x**2) #phase according to pythargoras
+    
     # amplitude
-    amp0=np.abs(x)<R*NA_geo #wave amplitude is 1 for x less than R*NA_geo, didn't know this function of the < operator
-    sigma_amp=1 #we filter the amplitude a bit to make the edges less sharp
+    amp0=np.abs(x)<R*np.tan(np.arcsin(NA_geo)) #wave amplitude is 1 for x less than R*NA_geo, didn't know this function of the < operator
+    sigma_amp=10 #we filter the amplitude a bit to make the edges less sharp
     amp_filter=np.exp(-x**2/sigma_amp**2)
     F_amp0=np.real(np.fft.fftshift(np.fft.fft(np.fft.ifftshift(amp0))))
     amp=np.real(np.fft.fftshift(np.fft.ifft(np.fft.ifftshift(F_amp0*amp_filter))))
