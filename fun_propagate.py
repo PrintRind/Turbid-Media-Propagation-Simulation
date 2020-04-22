@@ -16,7 +16,7 @@ def fun_propagate(u,E_in,sample):
     
     uk=2*np.pi/u/N   #increment in frequency-space is 1/(size of grid in x-space); increment in k-space is 2*pi/(size of grid in x-space)
     kx=np.arange(-N[1]/2,N[1]/2)*uk[1] 
-    k = 2 * np.pi * RI/1.33 # k-vectors of light that traverses the different refractive indices, not accounting for objective NA here
+    k = 2 * np.pi * RI/np.min(RI)# k-vectors of light that traverses the different refractive indices, not accounting for objective NA here
     
     #defining propagator for each refractive index 
     prop = np.zeros((len(RI), N[1]), dtype='complex')  # initializing propagators

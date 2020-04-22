@@ -4,12 +4,12 @@
 # In[4]:
 
 
-def input_wavefront(NA, N, u):
+def input_wavefront(NA, N, u, RI):
     '''defining input wavefront: a spherical, converging wave'''
     
     import numpy as np
     x=np.arange(-N[1]/2,N[1]/2)*u[1]
-    NA_geo=NA/1.33 #geometric NA of our objective lens
+    NA_geo=NA/RI #geometric NA of our objective lens
     # phase
     R=N[0]*u[0] #radius of curvature; define it such that focus lies at last layer
     #phase = 2*np.pi*(np.sqrt(0j+R**2-x**2)-R)  # spherical phase
