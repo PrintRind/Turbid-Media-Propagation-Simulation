@@ -15,16 +15,15 @@ from input_wavefront import input_wavefront
 from scan_conjugate_correction import scan_conjugate_correction
 from calculate_conjugated_mask import calculate_conjugated_mask
 
-
 # In[4]:
 
 #user parameters
 m =2  #undersampling z-direction 
-n =2  #undersampling x-direction 
+n =2 #undersampling x-direction 
 N=np.array([int(1024/m), int(2*1024/n)]) # size of grid z,x
 u=np.array([.2*m, .1*n]) #units z, x in lambda
 NA=0.5 #NA of lens
-RI=np.array([1.33, 1.45]) #refractive indices of turbid sample (we assume a binary RI-distribution for simplicity)
+RI=np.array([1.33, 1.4]) #refractive indices of turbid sample (we assume a binary RI-distribution for simplicity)
 
 #%% creating grids
 
@@ -72,37 +71,40 @@ plt.xlim([0,200])
 
 
 # defining incident wavefront 
-E_in, phase, amp = input_wavefront(NA, N, u)
+E_in, phase, amp = input_wavefront(NA, N, u, RI[0])
 
 
 #%% propagate through  turbid sample 
 
-E=fun_propagate(u, E_in,sample)   #execute propagation 
+E=fun_propagate(u, E_in, sample)   #execute propagation 
     
 plt.figure(1)
-plt.imshow(np.fft.fftshift(abs(E)**2,1))
+plt.imshow(np.fft.fftshift(abs(E)**2,1),cmap='jet')
 plt.title("intensity")
 
-plt.figure(2)
-plt.plot(np.fft.fftshift(x),(np.real(E[-1,:])**2))
-plt.title('focus')
-plt.xlabel('x')
+# plt.figure(2)
+# plt.plot(np.fft.fftshift(x),(np.real(E[-1,:])**1))
+# plt.title('focus')
+# plt.xlabel('x')
 
 
 #%% test: propagating the scrambled focus backwards through the aberrating sample
 #we should see that the aberration-free wavefront is (almost) restored
 
-E2=fun_propagate(u,np.conj(E[-1,:]),np.flip(np.roll(sample,0,axis=1),0)) 
+E2=fun_propagate(u,np.conj(E[-1,:]),np.flip(sample,0)) 
 
 fig,axs = plt.subplots(2,1)
 
-axs[0].imshow(np.fft.fftshift(abs(E2)**1,1))
+axs[0].imshow(np.fft.fftshift(abs(E2)**1,1),cmap='jet')
 plt.title("backwards through turbidity - modulus of field")
 
+#axs[1].plot(np.fft.fftshift(np.unwrap(np.angle(E2[-1,:]*E_in))/2/np.pi))
 axs[1].plot(np.fft.fftshift(np.abs(E2[-1,:])))
 axs[1].plot(np.fft.fftshift(np.abs(E_in)))
 plt.title('focus')
 plt.xlabel('x')
+plt.ylabel('aberration in lambda')
+
 
 #%% propagate through a clear sample in order to get an undistored focus
 
